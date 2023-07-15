@@ -1,11 +1,13 @@
 package main
 
 import (
+	"database/sql"
+	_ "github.com/lib/pq"
 	"log"
-	stdhttp "net/http"
+	"net/http"
 
-	"foodDelivery/config"
-	"foodDelivery/delivery/http"
+	intPkg "foodDelivery/delivery/http"
+	"foodDelivery/migrations"
 	"foodDelivery/repository"
 	"foodDelivery/usecase"
 	"github.com/gorilla/mux"
@@ -13,9 +15,17 @@ import (
 
 func main() {
 	// Create a new database connection.
-	db, err := config.NewDB()
+	// Create a new database connection.
+	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost:5432/food_delivery?sslmode=disable")
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
+	}
+	defer db.Close()
+
+	// Create the users table.
+	err = migrations.CreateUsersTable(db)
+	if err != nil {
+		log.Fatalf("Failed to create users table: %v", err)
 	}
 
 	// Create an instance of the repository.
@@ -25,7 +35,7 @@ func main() {
 	userUseCase := usecase.NewUserUseCase(userRepository)
 
 	// Create an instance of the user handler, passing in the UserUseCase interface.
-	userHandler := http.NewUserHandler(userUseCase)
+	userHandler := intPkg.NewUserHandler(userUseCase)
 
 	// Create a new router.
 	router := mux.NewRouter()
@@ -38,7 +48,7 @@ func main() {
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")
-	err = stdhttp.ListenAndServe(":8080", router)
+	err = http.ListenAndServe(":8080", router)
 	if err != nil {
 		log.Fatalf("Failed to start the server: %v", err)
 	}

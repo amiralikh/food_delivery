@@ -1,4 +1,4 @@
-// app/delivery/http/handlers.go
+// handlers.go
 
 package http
 
@@ -28,9 +28,7 @@ func NewUserHandler(userUseCase usecase.UserUseCase) *UserHandler {
 func (uh *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userIDStr := vars["id"]
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-
-	// Convert the userID to the appropriate data type, such as int64, and use it as needed.
+	userID, _ := strconv.ParseInt(userIDStr, 10, 64)
 
 	user, err := uh.userUseCase.GetUserByID(userID)
 	if err != nil {
@@ -38,13 +36,7 @@ func (uh *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Serialize the user object into JSON.
-	response, err := json.Marshal(user)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
+	response, _ := json.Marshal(user)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(response)
@@ -73,36 +65,25 @@ func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 // UpdateUser handles the request to update an existing user.
 func (uh *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	// Extract the user ID from the URL path parameters.
 	vars := mux.Vars(r)
 	userIDStr := vars["id"]
+	userID, _ := strconv.ParseInt(userIDStr, 10, 64)
 
-	// Parse the user ID string to int64.
-	userID, err := strconv.ParseInt(userIDStr, 10, 64)
-	if err != nil {
-		http.Error(w, "Invalid user ID", http.StatusBadRequest)
-		return
-	}
-
-	// Decode the request body into a user object.
 	var user domain.User
-	err = json.NewDecoder(r.Body).Decode(&user)
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Set the user ID in the user object.
 	user.ID = userID
 
-	// Call the use case method to update the user.
 	err = uh.userUseCase.UpdateUser(&user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Prepare the HTTP response.
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	response := []byte(`{"message": "User updated successfully"}`)
@@ -114,8 +95,6 @@ func (uh *UserHandler) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	userIDStr := vars["id"]
 	userID, _ := strconv.ParseInt(userIDStr, 10, 64)
-
-	// Convert the userID to the appropriate data type, such as int64, and use it as needed.
 
 	err := uh.userUseCase.DeleteUser(userID)
 	if err != nil {
