@@ -40,3 +40,34 @@ func CreateUsersTable(db *sql.DB) error {
 
 	return nil
 }
+
+func CreateCategoriesTable(db *sql.DB) error {
+	// Check if the users table exists.
+	tableExists := false
+	err := db.QueryRow("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'categories')").Scan(&tableExists)
+	if err != nil {
+		return err
+	}
+
+	// Create the users table if it doesn't exist.
+	if !tableExists {
+		createUsersTable := `
+			CREATE TABLE users (
+				id SERIAL PRIMARY KEY,
+				name VARCHAR(255) NOT NULL,
+				image_url VARCHAR(255) NOT NULL
+			)
+		`
+
+		_, err = db.Exec(createUsersTable)
+		if err != nil {
+			return err
+		}
+
+		log.Println("category table created successfully")
+	} else {
+		log.Println("category table already exists")
+	}
+
+	return nil
+}

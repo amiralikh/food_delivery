@@ -40,11 +40,13 @@ func main() {
 	// Create a new router.
 	router := mux.NewRouter()
 
-	// Register the user routes.
+	// users API
 	router.HandleFunc("/api/users/{id}", userHandler.GetUserByID).Methods("GET")
 	router.HandleFunc("/api/users", userHandler.CreateUser).Methods("POST")
 	router.HandleFunc("/api/users/{id}", userHandler.UpdateUser).Methods("PUT")
 	router.HandleFunc("/api/users/{id}", userHandler.DeleteUser).Methods("DELETE")
+
+	// categories Api
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")
