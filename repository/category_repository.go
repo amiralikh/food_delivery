@@ -7,6 +7,9 @@ import (
 
 type CategoryRepository interface {
 	GetCategoryByID(categoryID int64) (*domain.Category, error)
+	CreateCategory(category *domain.Category) error
+	UpdateCategory(category *domain.Category) error
+	DeleteCategory(categoryID int64) error
 }
 
 type categoryRepository struct {

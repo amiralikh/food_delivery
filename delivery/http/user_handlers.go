@@ -1,5 +1,3 @@
-// handlers.go
-
 package http
 
 import (
