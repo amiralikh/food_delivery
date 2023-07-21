@@ -10,6 +10,7 @@ type CategoryUseCase interface {
 	CreateCategory(category *domain.Category) error
 	UpdateCategory(category *domain.Category) error
 	DeleteCategory(category int64) error
+	GetAllCategories() ([]*domain.Category, error)
 }
 
 type categoryUseCase struct {
@@ -53,4 +54,12 @@ func (cu *categoryUseCase) DeleteCategory(categoryID int64) error {
 		return err
 	}
 	return nil
+}
+
+func (cu *categoryUseCase) GetAllCategories() ([]*domain.Category, error) {
+	category, err := cu.categoryRepository.GetAllCategories()
+	if err != nil {
+		return nil, err
+	}
+	return category, nil
 }

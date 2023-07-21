@@ -44,6 +44,7 @@ func (uh *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user domain.User
 	err := json.NewDecoder(r.Body).Decode(&user)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

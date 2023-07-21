@@ -24,18 +24,22 @@ func main() {
 
 	// Create the users table.
 	err = migrations.CreateUsersTable(db)
+	err = migrations.CreateCategoriesTable(db)
 	if err != nil {
-		log.Fatalf("Failed to create users table: %v", err)
+		log.Fatalf("Failed to create table: %v", err)
 	}
 
 	// Create an instance of the repository.
 	userRepository := repository.NewUserRepository(db)
+	categoryRepository := repository.NewCategoryRepository(db)
 
 	// Create an instance of the use case, passing in the UserRepository interface.
 	userUseCase := usecase.NewUserUseCase(userRepository)
+	categoryUseCase := usecase.NewCategoryUseCase(categoryRepository)
 
 	// Create an instance of the user handler, passing in the UserUseCase interface.
 	userHandler := intPkg.NewUserHandler(userUseCase)
+	categoryHandler := intPkg.NewCategoryHandler(categoryUseCase)
 
 	// Create a new router.
 	router := mux.NewRouter()
@@ -47,6 +51,11 @@ func main() {
 	router.HandleFunc("/api/users/{id}", userHandler.DeleteUser).Methods("DELETE")
 
 	// categories Api
+	router.HandleFunc("/api/categories/{id}", categoryHandler.GetCategoryByID).Methods("GET")
+	router.HandleFunc("/api/categories", categoryHandler.GetAllCategories).Methods("GET")
+	router.HandleFunc("/api/categories", categoryHandler.CreateCategory).Methods("POST")
+	router.HandleFunc("/api/categories/{id}", categoryHandler.UpdateCategory).Methods("PUT")
+	router.HandleFunc("/api/categories/{id}", categoryHandler.DeleteCategory).Methods("DELETE")
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")

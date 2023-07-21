@@ -52,7 +52,7 @@ func CreateCategoriesTable(db *sql.DB) error {
 	// Create the users table if it doesn't exist.
 	if !tableExists {
 		createUsersTable := `
-			CREATE TABLE users (
+			CREATE TABLE categories (
 				id SERIAL PRIMARY KEY,
 				name VARCHAR(255) NOT NULL,
 				image_url VARCHAR(255) NOT NULL

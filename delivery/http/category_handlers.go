@@ -43,13 +43,19 @@ func (ch *CategoryHandler) CreateCategory(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	err = ch.categoryUseCase.CreateCategory(&category)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	response := []byte(`{"message": "User category successfully"}`)
+	response := []byte(`{"message": "Create category successfully"}`)
 	_, _ = w.Write(response)
 }
 
-func (ch *CategoryHandler) updateCategory(w http.ResponseWriter, r *http.Request) {
+func (ch *CategoryHandler) UpdateCategory(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	catIDStr := vars["id"]
 	catID, _ := strconv.ParseInt(catIDStr, 10, 64)
@@ -93,4 +99,23 @@ func (ch *CategoryHandler) DeleteCategory(w http.ResponseWriter, r *http.Request
 	response := []byte(`{"message": "Category deleted successfully"}`)
 	_, _ = w.Write(response)
 
+}
+
+func (ch *CategoryHandler) GetAllCategories(w http.ResponseWriter, r *http.Request) {
+	categories, err := ch.categoryUseCase.GetAllCategories()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Serialize the categories into JSON.
+	response, err := json.Marshal(categories)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(response)
 }
