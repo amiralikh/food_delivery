@@ -10,6 +10,7 @@ type FoodRepository interface {
 	CreateFood(food *domain.Food) error
 	GetFoodByID(foodID int64) (*domain.Food, error)
 	UpdateFood(food *domain.Food) error
+	DeleteFood(foodID int64) error
 }
 
 type foodRepository struct {
@@ -98,5 +99,16 @@ func (fr *foodRepository) UpdateFood(food *domain.Food) error {
 		return err
 	}
 
+	return nil
+}
+
+func (fr *foodRepository) DeleteFood(foodID int64) error {
+	_, err := fr.db.Exec("DELETE FROM foods WHERE id = $1", foodID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrFoodNotFound
+		}
+		return err
+	}
 	return nil
 }

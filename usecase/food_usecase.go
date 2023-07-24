@@ -21,6 +21,7 @@ type FoodUseCase interface {
 	GetFoodByID(foodID int64) (*domain.Food, error)
 	UpdateFood(food *domain.Food) error
 	SyncGallery(foodID int64, images []*domain.Image) error
+	DeleteFood(foodID int64) error
 }
 
 type foodUseCase struct {
@@ -151,6 +152,40 @@ func (fu *foodUseCase) SyncGallery(foodID int64, images []*domain.Image) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	return nil
+}
+
+func (fu *foodUseCase) DeleteAllImagesByFoodID(foodID int64) error {
+	return fu.galleryRepo.DeleteAllImagesByFoodID(foodID)
+}
+
+func (fu *foodUseCase) DeleteFood(foodID int64) error {
+	_, err := fu.foodRepo.GetFoodByID(foodID)
+	if err != nil {
+		if errors.Is(err, repository.ErrFoodNotFound) {
+			return ErrFoodNotFound
+		}
+		return err
+	}
+
+	// Delete all images associated with the food.
+	hasImages, err := fu.galleryRepo.HasImages(foodID)
+	if hasImages {
+		err = fu.galleryRepo.DeleteAllImagesByFoodID(foodID)
+		if err != nil {
+			return err
+		}
+	}
+	if err != nil {
+		return err
+	}
+
+	// Delete the food after its images have been deleted.
+	err = fu.foodRepo.DeleteFood(foodID)
+	if err != nil {
+		return err
 	}
 
 	return nil

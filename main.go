@@ -79,6 +79,7 @@ func main() {
 	router.HandleFunc("/api/foods/{id}", foodHandler.GetFoodByID).Methods("GET")
 	router.HandleFunc("/api/foods", foodHandler.CreateFood).Methods("POST")
 	router.HandleFunc("/api/foods/{id}", foodHandler.UpdateFood).Methods("PUT")
+	router.HandleFunc("/api/foods/{id}", foodHandler.DeleteFood).Methods("DELETE")
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")

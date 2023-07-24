@@ -17,6 +17,8 @@ type GalleryRepository interface {
 	DeleteImage(imageID int64) error
 	SyncGallery(foodID int64, images []*domain.Image) error
 	InsertImage(image *domain.Image) error
+	DeleteAllImagesByFoodID(foodID int64) error
+	HasImages(foodID int64) (bool, error)
 }
 
 type galleryRepository struct {
@@ -45,10 +47,6 @@ func (gr *galleryRepository) GetImagesByFoodID(foodID int64) ([]*domain.Image, e
 			return nil, err
 		}
 		images = append(images, image)
-	}
-
-	if len(images) == 0 {
-		return nil, ErrGalleryNotFound
 	}
 
 	return images, nil
@@ -207,4 +205,41 @@ func (gr *galleryRepository) InsertImage(image *domain.Image) error {
 	}
 
 	return nil
+}
+
+func (gr *galleryRepository) DeleteAllImagesByFoodID(foodID int64) error {
+	// Check if the food with the given ID exists before attempting to delete its images.
+	_, err := gr.db.Exec("SELECT id FROM foods WHERE id = $1", foodID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrFoodNotFound
+		}
+		return err
+	}
+
+	// Check if the food has any images before attempting to delete them.
+	hasImages, err := gr.HasImages(foodID)
+	if err != nil {
+		return err
+	}
+
+	if hasImages {
+		// Delete all images associated with the food.
+		_, err := gr.db.Exec("DELETE FROM gallery WHERE food_id = $1", foodID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (gr *galleryRepository) HasImages(foodID int64) (bool, error) {
+	var count int
+	err := gr.db.QueryRow("SELECT COUNT(*) FROM gallery WHERE food_id = $1", foodID).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }

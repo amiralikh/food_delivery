@@ -125,3 +125,28 @@ func (fh *FoodHandler) UpdateFood(w http.ResponseWriter, r *http.Request) {
 	response := []byte(`{"message": "Food and Gallery updated successfully"}`)
 	_, _ = w.Write(response)
 }
+
+func (fh *FoodHandler) DeleteFood(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	foodIDStr := vars["id"]
+	foodID, err := strconv.ParseInt(foodIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid food ID", http.StatusBadRequest)
+		return
+	}
+
+	err = fh.foodUseCase.DeleteFood(foodID)
+	if err != nil {
+		if errors.Is(err, usecase.ErrFoodNotFound) {
+			http.Error(w, "Food not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	response := []byte(`{"message": "Food deleted successfully"}`)
+	_, _ = w.Write(response)
+}
