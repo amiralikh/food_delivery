@@ -11,11 +11,16 @@ import (
 
 type SupplierHandler struct {
 	supplierUseCase usecase.SupplierUseCase
+	categoryUseCase usecase.CategoryUseCase
+	foodUseCase     usecase.FoodUseCase
 }
 
-func NewSupplierHandler(supplierUseCase usecase.SupplierUseCase) *SupplierHandler {
+func NewSupplierHandler(supplierUseCase usecase.SupplierUseCase, categoryUseCase usecase.CategoryUseCase,
+	foodUseCase usecase.FoodUseCase) *SupplierHandler {
 	return &SupplierHandler{
 		supplierUseCase: supplierUseCase,
+		categoryUseCase: categoryUseCase,
+		foodUseCase:     foodUseCase,
 	}
 }
 
@@ -108,6 +113,67 @@ func (sh *SupplierHandler) GetAllSuppliers(w http.ResponseWriter, r *http.Reques
 
 	// Serialize the categories into JSON.
 	response, err := json.Marshal(suppliers)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(response)
+}
+
+func (sh *SupplierHandler) GetSupplierCategories(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	supplierIDStr := vars["id"]
+	supplierID, err := strconv.ParseInt(supplierIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid supplier ID", http.StatusBadRequest)
+		return
+	}
+
+	categories, err := sh.categoryUseCase.GetCategoriesBySupplierID(supplierID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Serialize the categories into JSON.
+	response, err := json.Marshal(categories)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(response)
+}
+
+func (sh *SupplierHandler) GetFoodsByCategoryAndSupplier(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	categoryIDStr := vars["cat_id"]
+	categoryID, err := strconv.ParseInt(categoryIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid category ID", http.StatusBadRequest)
+		return
+	}
+
+	supplierIDStr := vars["supplier_id"]
+	supplierID, err := strconv.ParseInt(supplierIDStr, 10, 64)
+	if err != nil {
+		http.Error(w, "Invalid supplier ID", http.StatusBadRequest)
+		return
+	}
+
+	foods, err := sh.foodUseCase.GetFoodsByCategoryAndSupplier(categoryID, supplierID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Serialize the foods into JSON.
+	response, err := json.Marshal(foods)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

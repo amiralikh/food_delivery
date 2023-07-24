@@ -12,6 +12,7 @@ type FoodRepository interface {
 	UpdateFood(food *domain.Food) error
 	DeleteFood(foodID int64) error
 	GetAllFoodsWithImages() ([]*domain.Food, error)
+	GetFoodsByCategoryAndSupplier(categoryID, supplierID int64) ([]*domain.Food, error)
 }
 
 type foodRepository struct {
@@ -158,6 +159,35 @@ func (fr *foodRepository) GetAllFoodsWithImages() ([]*domain.Food, error) {
 	foods := make([]*domain.Food, 0, len(foodsMap))
 	for _, food := range foodsMap {
 		foods = append(foods, food)
+	}
+
+	return foods, nil
+}
+
+func (fr *foodRepository) GetFoodsByCategoryAndSupplier(categoryID, supplierID int64) ([]*domain.Food, error) {
+	var foods []*domain.Food
+	query := `
+		SELECT f.id, f.name, f.supplier_id, s.name AS supplier_name, f.category_id, c.name AS category_name,
+			f.image_url, f.description, f.price, f.daily_quantity
+		FROM foods f
+		INNER JOIN suppliers s ON f.supplier_id = s.id
+		INNER JOIN categories c ON f.category_id = c.id
+		WHERE f.supplier_id = $1 AND f.category_id = $2
+	`
+	rows, err := fr.db.Query(query, supplierID, categoryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var food domain.Food
+		err := rows.Scan(&food.ID, &food.Name, &food.SupplierID, &food.SupplierName, &food.CategoryID, &food.CategoryName,
+			&food.ImageUrl, &food.Description, &food.Price, &food.DailyQuantity)
+		if err != nil {
+			return nil, err
+		}
+		foods = append(foods, &food)
 	}
 
 	return foods, nil

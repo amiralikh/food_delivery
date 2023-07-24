@@ -16,6 +16,7 @@ type CategoryRepository interface {
 	UpdateCategory(category *domain.Category) error
 	DeleteCategory(categoryID int64) error
 	GetAllCategories() ([]*domain.Category, error)
+	GetCategoriesBySupplierID(supplierID int64) ([]*domain.Category, error)
 }
 
 type categoryRepository struct {
@@ -100,6 +101,27 @@ func (cr *categoryRepository) GetAllCategories() ([]*domain.Category, error) {
 	}
 	if err = rows.Err(); err != nil {
 		return nil, err
+	}
+
+	return categories, nil
+}
+
+func (cr *categoryRepository) GetCategoriesBySupplierID(supplierID int64) ([]*domain.Category, error) {
+	var categories []*domain.Category
+	query := "SELECT id, name, image_url FROM categories WHERE id IN (SELECT DISTINCT category_id FROM foods WHERE supplier_id = $1)"
+	rows, err := cr.db.Query(query, supplierID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var category domain.Category
+		err := rows.Scan(&category.ID, &category.Name, &category.ImageUrl)
+		if err != nil {
+			return nil, err
+		}
+		categories = append(categories, &category)
 	}
 
 	return categories, nil

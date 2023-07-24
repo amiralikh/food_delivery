@@ -49,7 +49,7 @@ func main() {
 	// Create an instance of the user handler, passing in the UserUseCase interface.
 	userHandler := intPkg.NewUserHandler(userUseCase)
 	categoryHandler := intPkg.NewCategoryHandler(categoryUseCase)
-	supplierHandler := intPkg.NewSupplierHandler(supplierUseCase)
+	supplierHandler := intPkg.NewSupplierHandler(supplierUseCase, categoryUseCase, foodUseCase)
 	foodHandler := intPkg.NewFoodHandler(foodUseCase)
 
 	// Create a new router.
@@ -74,6 +74,8 @@ func main() {
 	router.HandleFunc("/api/suppliers", supplierHandler.CreateSupplier).Methods("POST")
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.UpdateSupplier).Methods("PUT")
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.DeleteSupplier).Methods("DELETE")
+	router.HandleFunc("/api/suppliers/{id}/categories", supplierHandler.GetSupplierCategories).Methods("GET")
+	router.HandleFunc("/api/supplier/{cat_id}/food-list/{supplier_id}", supplierHandler.GetFoodsByCategoryAndSupplier).Methods("GET")
 
 	// foods API
 	router.HandleFunc("/api/foods", foodHandler.GetAllFoodsWithImages).Methods("GET")

@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	_ "errors"
+	"golang.org/x/crypto/bcrypt"
 
 	"foodDelivery/domain"
 )
@@ -43,8 +44,13 @@ func (ur *userRepository) GetUserByID(userID int64) (*domain.User, error) {
 
 // CreateUser creates a new user in the database.
 func (ur *userRepository) CreateUser(user *domain.User) error {
-	query := "INSERT INTO users (name, last_name, phone, email, password, status) VALUES ($1, $2, $3, $4, $5, $6)"
-	_, err := ur.db.Exec(query, user.Name, user.LastName, user.Phone, user.Email, user.Password, user.Status)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	query := "UPDATE users SET name = $1, last_name = $2, phone = $3, email = $4, password = $5, status = $6 WHERE id = $7"
+	_, err = ur.db.Exec(query, user.Name, user.LastName, user.Phone, user.Email, hashedPassword, user.Status, user.ID)
 	if err != nil {
 		return err
 	}
@@ -54,10 +60,25 @@ func (ur *userRepository) CreateUser(user *domain.User) error {
 
 // UpdateUser updates an existing user in the database.
 func (ur *userRepository) UpdateUser(user *domain.User) error {
-	query := "UPDATE users SET name = $1, last_name = $2, phone = $3, email = $4, password = $5, status = $6 WHERE id = $7"
-	_, err := ur.db.Exec(query, user.Name, user.LastName, user.Phone, user.Email, user.Password, user.Status, user.ID)
-	if err != nil {
-		return err
+	if user.Password != "" {
+		// Hash the user password using bcrypt before updating the user.
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return err
+		}
+
+		query := "UPDATE users SET name = $1, last_name = $2, phone = $3, email = $4, password = $5, status = $6 WHERE id = $7"
+		_, err = ur.db.Exec(query, user.Name, user.LastName, user.Phone, user.Email, hashedPassword, user.Status, user.ID)
+		if err != nil {
+			return err
+		}
+	} else {
+		// If the user.Password field is empty, update the user without changing the password.
+		query := "UPDATE users SET name = $1, last_name = $2, phone = $3, email = $4, status = $5 WHERE id = $6"
+		_, err := ur.db.Exec(query, user.Name, user.LastName, user.Phone, user.Email, user.Status, user.ID)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

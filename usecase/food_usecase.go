@@ -26,6 +26,7 @@ type FoodUseCase interface {
 	SyncGallery(foodID int64, images []*domain.Image) error
 	DeleteFood(foodID int64) error
 	GetAllFoodsWithImages() ([]*domain.Food, error)
+	GetFoodsByCategoryAndSupplier(categoryID, supplierID int64) ([]*domain.Food, error)
 }
 
 type foodUseCase struct {
@@ -213,4 +214,8 @@ func (fu *foodUseCase) GetAllFoodsWithImages() ([]*domain.Food, error) {
 		return nil, err
 	}
 	return foods, nil
+}
+
+func (fu *foodUseCase) GetFoodsByCategoryAndSupplier(categoryID, supplierID int64) ([]*domain.Food, error) {
+	return fu.foodRepo.GetFoodsByCategoryAndSupplier(categoryID, supplierID)
 }
