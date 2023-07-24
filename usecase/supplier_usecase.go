@@ -6,6 +6,11 @@ import (
 )
 
 type SupplierUseCase interface {
+	GetSupplierById(supplierID int64) (*domain.Supplier, error)
+	CreateSupplier(supplier *domain.Supplier) error
+	UpdateSupplier(supplier *domain.Supplier) error
+	DeleteSupplier(supplierID int64) error
+	GetAllSuppliers() ([]*domain.Supplier, error)
 }
 
 type supplierUseCase struct {

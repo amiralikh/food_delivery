@@ -37,8 +37,8 @@ func (sr *supplierRepository) GetSupplierByID(supplierID int64) (*domain.Supplie
 }
 
 func (sr *supplierRepository) CreateSupplier(supplier *domain.Supplier) error {
-	query := "INSERT INTO suppliers (name,address,description,logo_url,opening_hour,closing_hour,user_id,delivery_time)VALUES ($1 ,$2 ,$3, $4, $5,$6,$7,$8)"
-	result, err := sr.db.Exec(query, supplier.Name, supplier.Address, supplier.Description, supplier.Description, supplier.LogoUrl, supplier.OpeningHour, supplier.ClosingHour, supplier.UserID, supplier.DeliveryTime)
+	query := "INSERT INTO suppliers (name, address, description, logo_url, opening_hour, closing_hour, user_id, delivery_time) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
+	result, err := sr.db.Exec(query, supplier.Name, supplier.Address, supplier.Description, supplier.LogoUrl, supplier.OpeningHour, supplier.ClosingHour, supplier.UserID, supplier.DeliveryTime)
 	rowsAffected, err := result.RowsAffected()
 	if rowsAffected == 0 {
 		return errors.New("validation error: supplier not created")
@@ -51,8 +51,8 @@ func (sr *supplierRepository) CreateSupplier(supplier *domain.Supplier) error {
 }
 
 func (sr *supplierRepository) UpdateSupplier(supplier *domain.Supplier) error {
-	query := "UPDATE suppliers SET name = $1, address = $2, description = $3, logo_url = $4, opening_hour = $5, closing_hour = $6, user_id = $7, delivery_time = $8 WHERE id = $8"
-	result, err := sr.db.Exec(query, supplier.Name, supplier.Address, supplier.Description, supplier.Description, supplier.LogoUrl, supplier.OpeningHour, supplier.ClosingHour, supplier.UserID, supplier.DeliveryTime, supplier.ID)
+	query := "UPDATE suppliers SET name = $1, address = $2, description = $3, logo_url = $4, opening_hour = $5, closing_hour = $6, user_id = $7, delivery_time = $8 WHERE id = $9"
+	result, err := sr.db.Exec(query, supplier.Name, supplier.Address, supplier.Description, supplier.LogoUrl, supplier.OpeningHour, supplier.ClosingHour, supplier.UserID, supplier.DeliveryTime, supplier.ID)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (sr *supplierRepository) DeleteSupplier(supplierID int64) error {
 }
 
 func (sr *supplierRepository) GetAllSuppliers() ([]*domain.Supplier, error) {
-	query := "SELECT id,name,address,description,logo_url,opening_hour,closing_hour,user_id,delivery_time FROM suppliers WHERE id = $1"
+	query := "SELECT id,name,address,description,logo_url,opening_hour,closing_hour,user_id,delivery_time FROM suppliers"
 	rows, err := sr.db.Query(query)
 	if err != nil {
 		return nil, err

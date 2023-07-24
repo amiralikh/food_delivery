@@ -9,5 +9,5 @@ type Supplier struct {
 	OpeningHour  string `json:"opening_hour"`
 	ClosingHour  string `json:"closing_hour"`
 	UserID       int64  `json:"user_id"`
-	DeliveryTime int8   `json:"delivery_time"`
+	DeliveryTime string `json:"delivery_time"`
 }
