@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	intPkg "foodDelivery/delivery/http"
+	"foodDelivery/delivery/middleware"
 	"foodDelivery/migrations"
 	"foodDelivery/repository"
 	"foodDelivery/usecase"
@@ -80,7 +81,7 @@ func main() {
 	// foods API
 	router.HandleFunc("/api/foods", foodHandler.GetAllFoodsWithImages).Methods("GET")
 	router.HandleFunc("/api/foods/{id}", foodHandler.GetFoodByID).Methods("GET")
-	router.HandleFunc("/api/foods", foodHandler.CreateFood).Methods("POST")
+	router.HandleFunc("/api/foods", middleware.AuthMiddleware(foodHandler.CreateFood)).Methods("POST")
 	router.HandleFunc("/api/foods/{id}", foodHandler.UpdateFood).Methods("PUT")
 	router.HandleFunc("/api/foods/{id}", foodHandler.DeleteFood).Methods("DELETE")
 
