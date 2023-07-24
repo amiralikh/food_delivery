@@ -76,6 +76,7 @@ func main() {
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.DeleteSupplier).Methods("DELETE")
 
 	// foods API
+	router.HandleFunc("/api/foods", foodHandler.GetAllFoodsWithImages).Methods("GET")
 	router.HandleFunc("/api/foods/{id}", foodHandler.GetFoodByID).Methods("GET")
 	router.HandleFunc("/api/foods", foodHandler.CreateFood).Methods("POST")
 	router.HandleFunc("/api/foods/{id}", foodHandler.UpdateFood).Methods("PUT")

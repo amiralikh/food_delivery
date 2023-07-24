@@ -10,10 +10,13 @@ var (
 	ErrFoodNameRequired = errors.New("food name is required")
 	ErrCategoryRequired = errors.New("food category is required")
 	ErrCategoryNotFound = errors.New("food category not found")
+	ErrImageRequired    = errors.New("food image required")
 	ErrSupplierRequired = errors.New("food supplier is required")
+	ErrGalleryRequired  = errors.New("food images is required")
 	ErrSupplierNotFound = errors.New("food supplier not found")
 	ErrFoodNotFound     = errors.New("food not found")
 	ErrImageNotFound    = errors.New("image not found")
+	ErrRequiredFields   = errors.New("all Fields are required")
 )
 
 type FoodUseCase interface {
@@ -22,6 +25,7 @@ type FoodUseCase interface {
 	UpdateFood(food *domain.Food) error
 	SyncGallery(foodID int64, images []*domain.Image) error
 	DeleteFood(foodID int64) error
+	GetAllFoodsWithImages() ([]*domain.Food, error)
 }
 
 type foodUseCase struct {
@@ -59,8 +63,20 @@ func (fu *foodUseCase) CreateFood(food *domain.Food) error {
 		return ErrCategoryRequired
 	}
 
+	if food.ImageUrl == "" {
+		return ErrImageRequired
+	}
+
 	if food.SupplierID == 0 {
 		return ErrSupplierRequired
+	}
+
+	if (food.Description == "") || (food.DailyQuantity <= 0) || (food.Price <= 0) {
+		return ErrRequiredFields
+	}
+
+	if len(food.Gallery) == 0 {
+		return ErrGalleryRequired
 	}
 
 	_, err := fu.categoryRepo.GetCategoryByID(food.CategoryID)
@@ -189,4 +205,12 @@ func (fu *foodUseCase) DeleteFood(foodID int64) error {
 	}
 
 	return nil
+}
+
+func (fu *foodUseCase) GetAllFoodsWithImages() ([]*domain.Food, error) {
+	foods, err := fu.foodRepo.GetAllFoodsWithImages()
+	if err != nil {
+		return nil, err
+	}
+	return foods, nil
 }

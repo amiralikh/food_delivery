@@ -150,3 +150,22 @@ func (fh *FoodHandler) DeleteFood(w http.ResponseWriter, r *http.Request) {
 	response := []byte(`{"message": "Food deleted successfully"}`)
 	_, _ = w.Write(response)
 }
+
+func (fh *FoodHandler) GetAllFoodsWithImages(w http.ResponseWriter, r *http.Request) {
+	foods, err := fh.foodUseCase.GetAllFoodsWithImages()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Serialize the foods object into JSON.
+	response, err := json.Marshal(foods)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, _ = w.Write(response)
+}
