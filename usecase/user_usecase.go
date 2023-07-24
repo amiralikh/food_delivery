@@ -8,6 +8,8 @@ import (
 // UserUseCase represents the user use case interface.
 type UserUseCase interface {
 	GetUserByID(userID int64) (*domain.User, error)
+	GetUserByEmail(userEmail string) (*domain.User, error)
+	RegisterUser(user *domain.User) error
 	CreateUser(user *domain.User) error
 	UpdateUser(user *domain.User) error
 	DeleteUser(userID int64) error
@@ -35,9 +37,27 @@ func (uc *userUseCase) GetUserByID(userID int64) (*domain.User, error) {
 	return user, nil
 }
 
+func (uc *userUseCase) GetUserByEmail(userEmail string) (*domain.User, error) {
+	user, err := uc.userRepository.GetUserByEmail(userEmail)
+	if err != nil {
+		return nil, repository.ErrUserNotFound
+	}
+
+	return user, nil
+}
+
 // CreateUser creates a new user.
 func (uc *userUseCase) CreateUser(user *domain.User) error {
 	err := uc.userRepository.CreateUser(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (uc *userUseCase) RegisterUser(user *domain.User) error {
+	err := uc.userRepository.RegisterUser(user)
 	if err != nil {
 		return err
 	}

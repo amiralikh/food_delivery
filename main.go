@@ -2,15 +2,14 @@ package main
 
 import (
 	"database/sql"
-	_ "github.com/lib/pq"
-	"log"
-	"net/http"
-
 	intPkg "foodDelivery/delivery/http"
 	"foodDelivery/migrations"
 	"foodDelivery/repository"
 	"foodDelivery/usecase"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq"
+	"log"
+	"net/http"
 )
 
 func main() {
@@ -51,6 +50,7 @@ func main() {
 	categoryHandler := intPkg.NewCategoryHandler(categoryUseCase)
 	supplierHandler := intPkg.NewSupplierHandler(supplierUseCase, categoryUseCase, foodUseCase)
 	foodHandler := intPkg.NewFoodHandler(foodUseCase)
+	authHandler := intPkg.NewAuthHandler(userUseCase)
 
 	// Create a new router.
 	router := mux.NewRouter()
@@ -83,6 +83,10 @@ func main() {
 	router.HandleFunc("/api/foods", foodHandler.CreateFood).Methods("POST")
 	router.HandleFunc("/api/foods/{id}", foodHandler.UpdateFood).Methods("PUT")
 	router.HandleFunc("/api/foods/{id}", foodHandler.DeleteFood).Methods("DELETE")
+
+	// auth
+	router.HandleFunc("/api/login", authHandler.Login).Methods("POST")
+	router.HandleFunc("/api/register", authHandler.Register).Methods("POST")
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")
