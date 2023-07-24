@@ -7,7 +7,6 @@ import (
 )
 
 var (
-	// ErrCategoryNotFound represents the error when a category is not found.
 	ErrCategoryNotFound = errors.New("category not found")
 )
 

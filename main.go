@@ -26,6 +26,9 @@ func main() {
 	err = migrations.CreateUsersTable(db)
 	err = migrations.CreateCategoriesTable(db)
 	err = migrations.CreateSuppliersTable(db)
+	err = migrations.CreateFoodsTable(db)
+	err = migrations.CreateGalleryTable(
+		db)
 	if err != nil {
 		log.Fatalf("Failed to create table: %v", err)
 	}
@@ -34,16 +37,20 @@ func main() {
 	userRepository := repository.NewUserRepository(db)
 	categoryRepository := repository.NewCategoryRepository(db)
 	supplierRepository := repository.NewSupplierRepository(db)
+	foodRepository := repository.NewFoodRepository(db)
+	galleryRepository := repository.NewGalleryRepository(db)
 
 	// Create an instance of the use case, passing in the UserRepository interface.
 	userUseCase := usecase.NewUserUseCase(userRepository)
 	categoryUseCase := usecase.NewCategoryUseCase(categoryRepository)
 	supplierUseCase := usecase.NewSupplierUseCase(supplierRepository)
+	foodUseCase := usecase.NewFoodUseCase(foodRepository, categoryRepository, supplierRepository, galleryRepository)
 
 	// Create an instance of the user handler, passing in the UserUseCase interface.
 	userHandler := intPkg.NewUserHandler(userUseCase)
 	categoryHandler := intPkg.NewCategoryHandler(categoryUseCase)
 	supplierHandler := intPkg.NewSupplierHandler(supplierUseCase)
+	foodHandler := intPkg.NewFoodHandler(foodUseCase)
 
 	// Create a new router.
 	router := mux.NewRouter()
@@ -63,10 +70,15 @@ func main() {
 
 	// suppliers API
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.GetSupplierByID).Methods("GET")
-	router.HandleFunc("/api/suppliers", supplierHandler.GetAllSuppliers).Methods("GET")
+	router.HandleFunc("/api/suppliers", supplierHandler.GetAllSuppliers).Methods("")
 	router.HandleFunc("/api/suppliers", supplierHandler.CreateSupplier).Methods("POST")
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.UpdateSupplier).Methods("PUT")
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.DeleteSupplier).Methods("DELETE")
+
+	// foods API
+	router.HandleFunc("/api/foods/{id}", foodHandler.GetFoodByID).Methods("GET")
+	router.HandleFunc("/api/foods", foodHandler.CreateFood).Methods("POST")
+	router.HandleFunc("/api/foods/{id}", foodHandler.UpdateFood).Methods("PUT")
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")

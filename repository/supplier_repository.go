@@ -24,6 +24,10 @@ func NewSupplierRepository(db *sql.DB) SupplierRepository {
 	}
 }
 
+var (
+	ErrSupplierNotFound = errors.New("food not found")
+)
+
 func (sr *supplierRepository) GetSupplierByID(supplierID int64) (*domain.Supplier, error) {
 	query := "SELECT id,name,address,description,logo_url,opening_hour,closing_hour,user_id,delivery_time FROM suppliers WHERE id = $1"
 	row := sr.db.QueryRow(query, supplierID)
