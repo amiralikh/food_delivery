@@ -164,7 +164,6 @@ func CreateGalleryTable(db *sql.DB) error {
 	return nil
 }
 
-
 func CreateOrdersTable(db *sql.DB) error {
 	ordersTableExists := false
 	err := db.QueryRow("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'orders')").Scan(&ordersTableExists)
@@ -176,9 +175,7 @@ func CreateOrdersTable(db *sql.DB) error {
 		CREATE TABLE IF NOT EXISTS orders (
 			id SERIAL PRIMARY KEY,
 			user_id BIGINT NOT NULL REFERENCES users(id),
-			user_name VARCHAR(255) NOT NULL,
 			supplier_id BIGINT NOT NULL REFERENCES suppliers(id),
-			supplier_name VARCHAR(255) NOT NULL,
 			tracking_id VARCHAR(50) NOT NULL,
 			status VARCHAR(50) NOT NULL,
 			price NUMERIC(10, 2) NOT NULL,
@@ -222,4 +219,3 @@ func CreateOrderItemsTable(db *sql.DB) error {
 	}
 	return nil
 }
-

@@ -17,6 +17,7 @@ type OrderItem struct {
 	ID          int64   `json:"id"`
 	OrderID     int64   `json:"order_id"`
 	FoodID      int64   `json:"food_id"`
+	FoodName    int64   `json:"food_name"`
 	Quantity    int8    `json:"quantity"`
 	SinglePrice float32 `json:"single_price"`
 }
