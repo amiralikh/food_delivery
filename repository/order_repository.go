@@ -31,7 +31,7 @@ func NewOrderRepository(db *sql.DB) OrderRepository {
 }
 
 func (or *orderRepository) GetUserOrders(userId int64) (*[]domain.Order, error) {
-	orders := []domain.Order{}
+	var orders []domain.Order
 
 	query := `
 		SELECT o.id, o.user_id, u.name AS user_name, o.supplier_id, s.name AS supplier_name,
@@ -65,7 +65,6 @@ func (or *orderRepository) GetUserOrders(userId int64) (*[]domain.Order, error) 
 		if err != nil {
 			return nil, err
 		}
-
 		orders = append(orders, order)
 	}
 
@@ -170,7 +169,6 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 `
 	var totalPrice float32
 	for _, item := range *order.Items {
-		// Fetch the food price from the database
 		var foodPrice float32
 		err := or.db.QueryRow("SELECT price FROM foods WHERE id = $1", item.FoodID).Scan(&foodPrice)
 		if err != nil {
@@ -186,7 +184,6 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 		totalPrice += singlePrice * float32(item.Quantity)
 	}
 
-	// Update the order record with the total price
 	updateOrderQuery := `
 	UPDATE orders
 	SET price = $1

@@ -93,7 +93,9 @@ func main() {
 	router.HandleFunc("/api/register", authHandler.Register).Methods("POST")
 
 	// orders
-	router.HandleFunc("/api/order", orderHandler.SubmitOrder).Methods("POST")
+	router.HandleFunc("/api/orders", orderHandler.SubmitOrder).Methods("POST")
+	router.HandleFunc("/api/orders", orderHandler.GetUserOrders).Methods("GET")
+	router.HandleFunc("/api/orders/{id}", orderHandler.GetOrderWithItems).Methods("GET")
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")
