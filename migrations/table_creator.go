@@ -177,8 +177,8 @@ func CreateAddressesTable(db *sql.DB) error {
 			user_id BIGINT NOT NULL REFERENCES users(id),
 			name VARCHAR(50) NOT NULL,
 			zip VARCHAR(50) NOT NULL,
-			phone NUMERIC(10, 2) NOT NULL,
-			Address TIMESTAMP NOT NULL
+			phone VARCHAR(50) NOT NULL,
+			Address VARCHAR(225) NOT NULL
 		)
 	`
 		_, err = db.Exec(ordersTableQuery)

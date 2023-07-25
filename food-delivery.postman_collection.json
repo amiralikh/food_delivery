@@ -1,0 +1,777 @@
+{
+	"info": {
+		"_postman_id": "d1397f74-5176-44fa-afa5-9207b1d423fe",
+		"name": "food-delivery",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5967541"
+	},
+	"item": [
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Amir\",\r\n  \"last_name\": \"Doe\",\r\n  \"phone\": \"1234567890\",\r\n  \"email\": \"amirali-kh@live.com\",\r\n  \"password\": \"amir\",\r\n  \"status\": \"deactive\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user by id",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/users/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"5"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update user",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Amir\",\r\n  \"last_name\": \"Doe\",\r\n  \"phone\": \"1234567890\",\r\n  \"email\": \"john.doe@example.com\",\r\n  \"password\": \"password123\",\r\n  \"status\": \"active\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "remove user",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "default"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "default"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/users/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"5"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "get All Categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Homos\",\r\n  \"image_url\": \"https://www.pexels.com/photo/close-up-photo-of-biryani-dish-1624487/\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update category",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Alferedo\",\r\n  \"image_url\": \"https://www.pexels.com/photo/close-up-photo-of-biryani-dish-1624487/\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/categories/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update category Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Alferedo\",\r\n  \"image_url\": \"https://www.pexels.com/photo/close-up-photo-of-biryani-dish-1624487/\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/categories/4",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"categories",
+								"4"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Supplier",
+			"item": [
+				{
+					"name": "get All Suppliers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/suppliers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get supplier categories",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/suppliers/1/categories",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"suppliers",
+								"1",
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get foods by supplier and category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/supplier/2/food-list/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"supplier",
+								"2",
+								"food-list",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create supplier",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Example Supplier\",\r\n  \"address\": \"123 Main St\",\r\n  \"description\": \"Supplier description\",\r\n  \"logo_url\": \"https://www.foodpanda.com/wp-content/uploads/2023/06/foodpanda_logo_2023.svg\",\r\n  \"opening_hour\": \"12:00\",\r\n  \"closing_hour\": \"23:00\",\r\n  \"user_id\": 2,\r\n  \"delivery_time\": \"59\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/suppliers",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"suppliers"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update supplier",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Example Supplier\",\r\n  \"address\": \"123 Main St\",\r\n  \"description\": \"Supplier description\",\r\n  \"logo_url\": \"https://www.foodpanda.com/wp-content/uploads/2023/06/foodpanda_logo_2023.svg\",\r\n  \"opening_hour\": \"12:00\",\r\n  \"closing_hour\": \"23:00\",\r\n  \"user_id\": 2,\r\n  \"delivery_time\": \"59\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/suppliers/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"suppliers",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete supplier",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Alferedo\",\r\n  \"image_url\": \"https://www.pexels.com/photo/close-up-photo-of-biryani-dish-1624487/\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/suppliers/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"suppliers",
+								"3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "food",
+			"item": [
+				{
+					"name": "get foods By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/foods/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"foods",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get foods",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/foods",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"foods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create food",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTAyODIzMDUsImlzcyI6InlvdXItYXBwIiwic3ViIjoiOCJ9.-OhHm671o6zQodGyLJF5X5iW28Tt2fJmx27Z0K9NIW0",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Onion Ring\",\r\n  \"supplier_id\": 1,\r\n  \"category_id\": 1,\r\n  \"image_url\": \"https://example.com/pizza.jpg\",\r\n  \"description\": \"Delicious pizza with various toppings.\",\r\n  \"price\": 10,\r\n  \"daily_quantity\": 50,\r\n  \"gallery\": [\r\n    {\r\n      \"image_url\": \"https://example.com/pizza1.jpg\"\r\n    },\r\n     {\r\n      \"image_url\": \"https://example.com/pizza1.jpg\"\r\n    },\r\n     {\r\n      \"image_url\": \"https://example.com/pizza1.jpg\"\r\n    },\r\n     {\r\n      \"image_url\": \"https://example.com/pizza1.jpg\"\r\n    },\r\n    {\r\n      \"image_url\": \"https://example.com/pizza2.jpg\"\r\n    }\r\n  ]\r\n}\r\n"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/foods",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"foods"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update food",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Pizza Alferedo\",\r\n  \"supplier_id\": 1,\r\n  \"category_id\": 2,\r\n  \"image_url\": \"https://example.com/pizza.jpg\",\r\n  \"description\": \"Delicious pizza with various toppings.\",\r\n  \"price\": 10,\r\n  \"daily_quantity\": 50,\r\n  \"gallery\": [\r\n    {\r\n      \"image_url\": \"https://example.com/pizza1.jpg\"\r\n    }\r\n  ]\r\n}\r\n"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/foods/8",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"foods",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete foods",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Alferedo\",\r\n  \"image_url\": \"https://www.pexels.com/photo/close-up-photo-of-biryani-dish-1624487/\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/foods/7",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"foods",
+								"7"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"mamad.heydari@example.com\",\r\n    \"password\":\"secretpassword\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"John\",\r\n  \"last_name\": \"Doe\",\r\n  \"phone\": \"1234567890\",\r\n  \"email\": \"mamad.heydari@example.com\",\r\n  \"password\": \"secretpassword\",\r\n  \"status\": \"active\"\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "order",
+			"item": [
+				{
+					"name": "place an order",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"supplier_id\": 1,\r\n  \"tracking_id\": \"20\",\r\n  \"address_id\": 2,\r\n  \"status\": \"submitted\",\r\n  \"items\": [\r\n    {\r\n      \"food_id\": 18,\r\n      \"quantity\": 1\r\n    },\r\n    {\r\n      \"food_id\": 19,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user orders",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/orders",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get order with items",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"supplier_id\": 1,\r\n  \"tracking_id\": \"20\",\r\n  \"status\": \"submitted\",\r\n  \"items\": [\r\n    {\r\n      \"food_id\": 18,\r\n      \"quantity\": 2\r\n    },\r\n    {\r\n      \"food_id\": 19,\r\n      \"quantity\": 1\r\n    }\r\n  ]\r\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/orders/6",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"orders",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "addresses",
+			"item": [
+				{
+					"name": "submit address",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"zip\": \"12345\",\r\n  \"phone\": \"123-456-7890\",\r\n  \"address\": \"123 Main St\"\r\n}W"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/addresses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"addresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user addresses",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"zip\": \"12345\",\r\n  \"phone\": \"123-456-7890\",\r\n  \"address\": \"123 Main St\"\r\n}W"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/addresses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"addresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "address details",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"John Doe\",\r\n  \"zip\": \"12345\",\r\n  \"phone\": \"123-456-7890\",\r\n  \"address\": \"123 Main St\"\r\n}W"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/addresses",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"addresses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update address",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Amirali Khoshnevis\",\r\n  \"zip\": \"12345\",\r\n  \"phone\": \"+36701603604\",\r\n  \"address\": \"123 Main St\"\r\n}W"
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/addresses/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"addresses",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Address",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/addresses/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"addresses",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

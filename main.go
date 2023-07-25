@@ -106,7 +106,7 @@ func main() {
 	router.HandleFunc("/api/addresses/{id}", addressHandler.GetAddressByID).Methods("GET")
 	router.HandleFunc("/api/addresses/{id}", addressHandler.DeleteAddress).Methods("DELETE")
 	router.HandleFunc("/api/addresses/{id}", addressHandler.UpdateAddress).Methods("PUT")
-	router.HandleFunc("/api/addresses/", addressHandler.CreateAddress).Methods("POST")
+	router.HandleFunc("/api/addresses", addressHandler.CreateAddress).Methods("POST")
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")

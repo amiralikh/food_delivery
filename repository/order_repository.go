@@ -156,7 +156,7 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 
 	orderQuery := `
 		INSERT INTO orders (user_id, supplier_id, address_id, tracking_id, status, price, created_at)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		VALUES ($1, $2, $3, $4, $5, $6 , $7)
 		RETURNING id
 	`
 	var orderID int64
@@ -172,7 +172,8 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 	var totalPrice float32
 	for _, item := range *order.Items {
 
-		todaySell, dailyQuantity, err := or.getDailyFoodSales(item.FoodID)
+		todaySell, err := or.getDailyFoodSales(item.FoodID)
+		dailyQuantity, err := or.getFoodDailyQuantity(item.FoodID)
 
 		if (todaySell + int(item.Quantity)) <= dailyQuantity {
 			var foodPrice float32
@@ -209,28 +210,47 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 	return nil
 }
 
-func (or *orderRepository) getDailyFoodSales(foodID int64) (int, int, error) {
+func (or *orderRepository) getDailyFoodSales(foodID int64) (int, error) {
 	today := time.Now().UTC().Format("2006-01-02")
 
 	query := `
-		SELECT SUM(oi.quantity) AS total_sold, f.daily_quantity
+		SELECT COALESCE(SUM(oi.quantity), 0) AS total_sold
 		FROM order_items oi
-		JOIN orders o ON oi.order_id = o.id
-		JOIN foods f ON oi.food_id = f.id
-		WHERE o.created_at::date = $1 AND oi.food_id = $2
-		GROUP BY f.id
+		WHERE oi.food_id = $1 AND oi.order_id IN (
+			SELECT id
+			FROM orders
+			WHERE created_at::date = $2
+		)
 	`
 
-	var totalSold, dailyQuantity int
-	err := or.db.QueryRow(query, today, foodID).Scan(&totalSold, &dailyQuantity)
+	var totalSold int
+	err := or.db.QueryRow(query, foodID, today).Scan(&totalSold)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			totalSold = 0
-			dailyQuantity = 0
 		} else {
-			return 0, 0, err
+			return 0, err
 		}
 	}
 
-	return totalSold, dailyQuantity, nil
+	return totalSold, nil
+}
+
+func (or *orderRepository) getFoodDailyQuantity(foodID int64) (int, error) {
+	query := `
+		SELECT daily_quantity
+		FROM foods
+		WHERE id = $1
+	`
+
+	var dailyQuantity int
+	err := or.db.QueryRow(query, foodID).Scan(&dailyQuantity)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return 0, errors.New("food not found")
+		}
+		return 0, err
+	}
+
+	return dailyQuantity, nil
 }
