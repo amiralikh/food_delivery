@@ -39,12 +39,14 @@ func main() {
 	supplierRepository := repository.NewSupplierRepository(db)
 	foodRepository := repository.NewFoodRepository(db)
 	galleryRepository := repository.NewGalleryRepository(db)
+	orderRepository := repository.NewOrderRepository(db)
 
 	// Create an instance of the use case, passing in the UserRepository interface.
 	userUseCase := usecase.NewUserUseCase(userRepository)
 	categoryUseCase := usecase.NewCategoryUseCase(categoryRepository)
 	supplierUseCase := usecase.NewSupplierUseCase(supplierRepository)
 	foodUseCase := usecase.NewFoodUseCase(foodRepository, categoryRepository, supplierRepository, galleryRepository)
+	orderUseCase := usecase.NewOrderUseCase(orderRepository)
 
 	// Create an instance of the user handler, passing in the UserUseCase interface.
 	userHandler := intPkg.NewUserHandler(userUseCase)
@@ -52,6 +54,7 @@ func main() {
 	supplierHandler := intPkg.NewSupplierHandler(supplierUseCase, categoryUseCase, foodUseCase)
 	foodHandler := intPkg.NewFoodHandler(foodUseCase)
 	authHandler := intPkg.NewAuthHandler(userUseCase)
+	orderHandler := intPkg.NewOrderHandler(orderUseCase)
 
 	// Create a new router.
 	router := mux.NewRouter()
@@ -90,6 +93,7 @@ func main() {
 	router.HandleFunc("/api/register", authHandler.Register).Methods("POST")
 
 	// orders
+	router.HandleFunc("/api/order", orderHandler.SubmitOrder).Methods("POST")
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")

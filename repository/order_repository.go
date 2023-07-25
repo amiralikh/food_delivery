@@ -4,10 +4,15 @@ import (
 	"database/sql"
 	"errors"
 	"foodDelivery/domain"
+	"github.com/google/uuid"
+	"log"
 	"time"
 )
 
 type OrderRepository interface {
+	SubmitOrder(order *domain.Order) error
+	GetOrderWithItems(orderID int64) (*domain.Order, error)
+	GetUserOrders(userId int64) (*[]domain.Order, error)
 }
 
 type orderRepository struct {
@@ -16,6 +21,7 @@ type orderRepository struct {
 
 var (
 	ErrOrderNotFound = errors.New("order not found")
+	ErrItemsNotFound = errors.New("order must have at least one item")
 )
 
 func NewOrderRepository(db *sql.DB) OrderRepository {
@@ -139,11 +145,13 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 	if err != nil {
 		return err
 	}
+	if err != nil {
+		log.Fatal(err)
+	}
 	order.CreatedAT = time.Now().UTC().Format("2006-01-02 15:04:05")
 	order.Price = 0.0
-	for _, item := range *order.Items {
-		order.Price += item.SinglePrice * float32(item.Quantity)
-	}
+	order.UserID = 7
+	order.TrackingID = uuid.New().String()
 
 	orderQuery := `
 		INSERT INTO orders (user_id, supplier_id, tracking_id, status, price, created_at)
@@ -156,18 +164,36 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 		tx.Rollback()
 		return err
 	}
-
 	itemQuery := `
-		INSERT INTO order_items (order_id, food_id, quantity, single_price)
-		VALUES ($1, $2, $3, $4)
-	`
+	INSERT INTO order_items (order_id, food_id, quantity, single_price)
+	VALUES ($1, $2, $3, $4)
+`
+	var totalPrice float32
 	for _, item := range *order.Items {
-		_, err = tx.Exec(itemQuery, orderID, item.FoodID, item.Quantity, item.SinglePrice)
+		// Fetch the food price from the database
+		var foodPrice float32
+		err := or.db.QueryRow("SELECT price FROM foods WHERE id = $1", item.FoodID).Scan(&foodPrice)
 		if err != nil {
 			tx.Rollback()
 			return err
 		}
+		singlePrice := foodPrice
+		_, err = tx.Exec(itemQuery, orderID, item.FoodID, item.Quantity, singlePrice)
+		if err != nil {
+			tx.Rollback()
+			return err
+		}
+		totalPrice += singlePrice * float32(item.Quantity)
 	}
+
+	// Update the order record with the total price
+	updateOrderQuery := `
+	UPDATE orders
+	SET price = $1
+	WHERE id = $2
+`
+	_, err = tx.Exec(updateOrderQuery, totalPrice, orderID)
+
 	err = tx.Commit()
 	if err != nil {
 		tx.Rollback()
