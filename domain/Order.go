@@ -6,6 +6,7 @@ type Order struct {
 	UserName     string       `json:"user_name"`
 	SupplierID   int64        `json:"supplier_id"`
 	SupplierName string       `json:"supplier_name"`
+	AddressID    string       `json:"address_id"`
 	TrackingID   string       `json:"tracking_id"`
 	Status       string       `json:"status"`
 	Price        float32      `json:"price"`

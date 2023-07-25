@@ -27,6 +27,7 @@ func main() {
 	err = migrations.CreateSuppliersTable(db)
 	err = migrations.CreateFoodsTable(db)
 	err = migrations.CreateGalleryTable(db)
+	err = migrations.CreateAddressesTable(db)
 	err = migrations.CreateOrdersTable(db)
 	err = migrations.CreateOrderItemsTable(db)
 	if err != nil {
@@ -40,6 +41,7 @@ func main() {
 	foodRepository := repository.NewFoodRepository(db)
 	galleryRepository := repository.NewGalleryRepository(db)
 	orderRepository := repository.NewOrderRepository(db)
+	addressRepository := repository.NewAddressRepository(db)
 
 	// Create an instance of the use case, passing in the UserRepository interface.
 	userUseCase := usecase.NewUserUseCase(userRepository)
@@ -47,6 +49,7 @@ func main() {
 	supplierUseCase := usecase.NewSupplierUseCase(supplierRepository)
 	foodUseCase := usecase.NewFoodUseCase(foodRepository, categoryRepository, supplierRepository, galleryRepository)
 	orderUseCase := usecase.NewOrderUseCase(orderRepository)
+	addressUseCase := usecase.NewAddressUseCase(addressRepository)
 
 	// Create an instance of the user handler, passing in the UserUseCase interface.
 	userHandler := intPkg.NewUserHandler(userUseCase)
@@ -55,6 +58,7 @@ func main() {
 	foodHandler := intPkg.NewFoodHandler(foodUseCase)
 	authHandler := intPkg.NewAuthHandler(userUseCase)
 	orderHandler := intPkg.NewOrderHandler(orderUseCase)
+	addressHandler := intPkg.NewAddressHandler(addressUseCase)
 
 	// Create a new router.
 	router := mux.NewRouter()
@@ -96,6 +100,13 @@ func main() {
 	router.HandleFunc("/api/orders", orderHandler.SubmitOrder).Methods("POST")
 	router.HandleFunc("/api/orders", orderHandler.GetUserOrders).Methods("GET")
 	router.HandleFunc("/api/orders/{id}", orderHandler.GetOrderWithItems).Methods("GET")
+
+	// addresses
+	router.HandleFunc("/api/addresses", addressHandler.GetUsersAddresses).Methods("GET")
+	router.HandleFunc("/api/addresses/{id}", addressHandler.GetAddressByID).Methods("GET")
+	router.HandleFunc("/api/addresses/{id}", addressHandler.DeleteAddress).Methods("DELETE")
+	router.HandleFunc("/api/addresses/{id}", addressHandler.UpdateAddress).Methods("PUT")
+	router.HandleFunc("/api/addresses/", addressHandler.CreateAddress).Methods("POST")
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")

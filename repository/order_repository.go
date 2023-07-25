@@ -34,7 +34,7 @@ func (or *orderRepository) GetUserOrders(userId int64) (*[]domain.Order, error) 
 	var orders []domain.Order
 
 	query := `
-		SELECT o.id, o.user_id, u.name AS user_name, o.supplier_id, s.name AS supplier_name,
+		SELECT o.id, o.user_id, u.name AS user_name, o.supplier_id, s.name AS supplier_name, o.address_id
 			o.tracking_id, o.status, o.price, o.created_at
 		FROM orders o
 		INNER JOIN users u ON o.user_id = u.id
@@ -57,6 +57,7 @@ func (or *orderRepository) GetUserOrders(userId int64) (*[]domain.Order, error) 
 			&order.UserName,
 			&order.SupplierID,
 			&order.SupplierName,
+			&order.AddressID,
 			&order.TrackingID,
 			&order.Status,
 			&order.Price,
@@ -79,7 +80,7 @@ func (or *orderRepository) GetOrderWithItems(orderID int64) (*domain.Order, erro
 	order := &domain.Order{}
 
 	orderQuery := `
-		SELECT o.id, o.user_id, u.name AS user_name, o.supplier_id, s.name AS supplier_name,
+		SELECT o.id, o.user_id, u.name AS user_name, o.supplier_id, s.name AS supplier_name, o.address_id
 			o.tracking_id, o.status, o.price, o.created_at
 		FROM orders o
 		INNER JOIN users u ON o.user_id = u.id
@@ -92,6 +93,7 @@ func (or *orderRepository) GetOrderWithItems(orderID int64) (*domain.Order, erro
 		&order.UserName,
 		&order.SupplierID,
 		&order.SupplierName,
+		&order.AddressID,
 		&order.TrackingID,
 		&order.Status,
 		&order.Price,
@@ -153,12 +155,12 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 	order.TrackingID = uuid.New().String()
 
 	orderQuery := `
-		INSERT INTO orders (user_id, supplier_id, tracking_id, status, price, created_at)
+		INSERT INTO orders (user_id, supplier_id, address_id, tracking_id, status, price, created_at)
 		VALUES ($1, $2, $3, $4, $5, $6)
 		RETURNING id
 	`
 	var orderID int64
-	err = tx.QueryRow(orderQuery, order.UserID, order.SupplierID, order.TrackingID, order.Status, order.Price, order.CreatedAT).Scan(&orderID)
+	err = tx.QueryRow(orderQuery, order.UserID, order.SupplierID, order.AddressID, order.TrackingID, order.Status, order.Price, order.CreatedAT).Scan(&orderID)
 	if err != nil {
 		tx.Rollback()
 		return err
@@ -172,7 +174,7 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 
 		todaySell, dailyQuantity, err := or.getDailyFoodSales(item.FoodID)
 
-		if (todaySell + int(item.Quantity)) < dailyQuantity {
+		if (todaySell + int(item.Quantity)) <= dailyQuantity {
 			var foodPrice float32
 			err = or.db.QueryRow("SELECT price FROM foods WHERE id = $1", item.FoodID).Scan(&foodPrice)
 			if err != nil {
@@ -208,10 +210,8 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 }
 
 func (or *orderRepository) getDailyFoodSales(foodID int64) (int, int, error) {
-	// Get the current date in the database server's timezone
 	today := time.Now().UTC().Format("2006-01-02")
 
-	// Query to get the total quantity sold and daily_quantity for a specific food item today
 	query := `
 		SELECT SUM(oi.quantity) AS total_sold, f.daily_quantity
 		FROM order_items oi
@@ -225,7 +225,6 @@ func (or *orderRepository) getDailyFoodSales(foodID int64) (int, int, error) {
 	err := or.db.QueryRow(query, today, foodID).Scan(&totalSold, &dailyQuantity)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			// If no sales found for today, consider totalSold as 0
 			totalSold = 0
 			dailyQuantity = 0
 		} else {

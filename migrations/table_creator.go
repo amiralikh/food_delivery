@@ -164,6 +164,34 @@ func CreateGalleryTable(db *sql.DB) error {
 	return nil
 }
 
+func CreateAddressesTable(db *sql.DB) error {
+	ordersTableExists := false
+	err := db.QueryRow("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'addresses')").Scan(&ordersTableExists)
+	if err != nil {
+		return err
+	}
+	if !ordersTableExists {
+		ordersTableQuery := `
+		CREATE TABLE IF NOT EXISTS addresses (
+			id SERIAL PRIMARY KEY,
+			user_id BIGINT NOT NULL REFERENCES users(id),
+			name VARCHAR(50) NOT NULL,
+			zip VARCHAR(50) NOT NULL,
+			phone NUMERIC(10, 2) NOT NULL,
+			Address TIMESTAMP NOT NULL
+		)
+	`
+		_, err = db.Exec(ordersTableQuery)
+		if err != nil {
+			return fmt.Errorf("failed to create orders table: %v", err)
+		}
+		log.Println("addresses table created successfully")
+	} else {
+		log.Println("addresses table already exists")
+	}
+	return nil
+}
+
 func CreateOrdersTable(db *sql.DB) error {
 	ordersTableExists := false
 	err := db.QueryRow("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'orders')").Scan(&ordersTableExists)
@@ -176,6 +204,7 @@ func CreateOrdersTable(db *sql.DB) error {
 			id SERIAL PRIMARY KEY,
 			user_id BIGINT NOT NULL REFERENCES users(id),
 			supplier_id BIGINT NOT NULL REFERENCES suppliers(id),
+		    address_id BIGINT NOT NULL REFERENCES addresses(id),
 			tracking_id VARCHAR(50) NOT NULL,
 			status VARCHAR(50) NOT NULL,
 			price NUMERIC(10, 2) NOT NULL,
