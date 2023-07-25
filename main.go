@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	intPkg "foodDelivery/delivery/http"
-	"foodDelivery/delivery/middleware"
 	"foodDelivery/migrations"
 	"foodDelivery/repository"
 	"foodDelivery/usecase"
@@ -27,8 +26,9 @@ func main() {
 	err = migrations.CreateCategoriesTable(db)
 	err = migrations.CreateSuppliersTable(db)
 	err = migrations.CreateFoodsTable(db)
-	err = migrations.CreateGalleryTable(
-		db)
+	err = migrations.CreateGalleryTable(db)
+	err = migrations.CreateOrdersTable(db)
+	err = migrations.CreateOrderItemsTable(db)
 	if err != nil {
 		log.Fatalf("Failed to create table: %v", err)
 	}
@@ -80,14 +80,16 @@ func main() {
 
 	// foods API
 	router.HandleFunc("/api/foods", foodHandler.GetAllFoodsWithImages).Methods("GET")
+	router.HandleFunc("/api/foods", foodHandler.CreateFood).Methods("POST")
 	router.HandleFunc("/api/foods/{id}", foodHandler.GetFoodByID).Methods("GET")
-	router.HandleFunc("/api/foods", middleware.AuthMiddleware(foodHandler.CreateFood)).Methods("POST")
 	router.HandleFunc("/api/foods/{id}", foodHandler.UpdateFood).Methods("PUT")
 	router.HandleFunc("/api/foods/{id}", foodHandler.DeleteFood).Methods("DELETE")
 
 	// auth
 	router.HandleFunc("/api/login", authHandler.Login).Methods("POST")
 	router.HandleFunc("/api/register", authHandler.Register).Methods("POST")
+
+	// orders
 
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")

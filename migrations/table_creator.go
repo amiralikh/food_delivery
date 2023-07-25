@@ -163,3 +163,63 @@ func CreateGalleryTable(db *sql.DB) error {
 	}
 	return nil
 }
+
+
+func CreateOrdersTable(db *sql.DB) error {
+	ordersTableExists := false
+	err := db.QueryRow("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'orders')").Scan(&ordersTableExists)
+	if err != nil {
+		return err
+	}
+	if !ordersTableExists {
+		ordersTableQuery := `
+		CREATE TABLE IF NOT EXISTS orders (
+			id SERIAL PRIMARY KEY,
+			user_id BIGINT NOT NULL REFERENCES users(id),
+			user_name VARCHAR(255) NOT NULL,
+			supplier_id BIGINT NOT NULL REFERENCES suppliers(id),
+			supplier_name VARCHAR(255) NOT NULL,
+			tracking_id VARCHAR(50) NOT NULL,
+			status VARCHAR(50) NOT NULL,
+			price NUMERIC(10, 2) NOT NULL,
+			created_at TIMESTAMP NOT NULL
+		)
+	`
+		_, err = db.Exec(ordersTableQuery)
+		if err != nil {
+			return fmt.Errorf("failed to create orders table: %v", err)
+		}
+		log.Println("orders table created successfully")
+	} else {
+		log.Println("orders table already exists")
+	}
+	return nil
+}
+
+func CreateOrderItemsTable(db *sql.DB) error {
+	orderItemsTableExists := false
+	err := db.QueryRow("SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'order_items')").Scan(&orderItemsTableExists)
+	if err != nil {
+		return err
+	}
+	if !orderItemsTableExists {
+		orderItemsTableQuery := `
+		CREATE TABLE IF NOT EXISTS order_items (
+			id SERIAL PRIMARY KEY,
+			order_id BIGINT NOT NULL REFERENCES orders(id),
+			food_id BIGINT NOT NULL REFERENCES foods(id),
+			quantity SMALLINT NOT NULL,
+			single_price NUMERIC(10, 2) NOT NULL
+		)
+	`
+		_, err = db.Exec(orderItemsTableQuery)
+		if err != nil {
+			return fmt.Errorf("failed to create order_items table: %v", err)
+		}
+		log.Println("order_items table created successfully")
+	} else {
+		log.Println("order_items table already exists")
+	}
+	return nil
+}
+
