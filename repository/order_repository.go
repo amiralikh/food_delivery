@@ -169,19 +169,26 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 `
 	var totalPrice float32
 	for _, item := range *order.Items {
-		var foodPrice float32
-		err := or.db.QueryRow("SELECT price FROM foods WHERE id = $1", item.FoodID).Scan(&foodPrice)
-		if err != nil {
-			tx.Rollback()
-			return err
+
+		todaySell, dailyQuantity, err := or.getDailyFoodSales(item.FoodID)
+
+		if (todaySell + int(item.Quantity)) < dailyQuantity {
+			var foodPrice float32
+			err = or.db.QueryRow("SELECT price FROM foods WHERE id = $1", item.FoodID).Scan(&foodPrice)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+			singlePrice := foodPrice
+			_, err = tx.Exec(itemQuery, orderID, item.FoodID, item.Quantity, singlePrice)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+			totalPrice += singlePrice * float32(item.Quantity)
+		} else {
+			return errors.New("not enough item in the stock")
 		}
-		singlePrice := foodPrice
-		_, err = tx.Exec(itemQuery, orderID, item.FoodID, item.Quantity, singlePrice)
-		if err != nil {
-			tx.Rollback()
-			return err
-		}
-		totalPrice += singlePrice * float32(item.Quantity)
 	}
 
 	updateOrderQuery := `
@@ -198,4 +205,33 @@ func (or *orderRepository) SubmitOrder(order *domain.Order) error {
 	}
 
 	return nil
+}
+
+func (or *orderRepository) getDailyFoodSales(foodID int64) (int, int, error) {
+	// Get the current date in the database server's timezone
+	today := time.Now().UTC().Format("2006-01-02")
+
+	// Query to get the total quantity sold and daily_quantity for a specific food item today
+	query := `
+		SELECT SUM(oi.quantity) AS total_sold, f.daily_quantity
+		FROM order_items oi
+		JOIN orders o ON oi.order_id = o.id
+		JOIN foods f ON oi.food_id = f.id
+		WHERE o.created_at::date = $1 AND oi.food_id = $2
+		GROUP BY f.id
+	`
+
+	var totalSold, dailyQuantity int
+	err := or.db.QueryRow(query, today, foodID).Scan(&totalSold, &dailyQuantity)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// If no sales found for today, consider totalSold as 0
+			totalSold = 0
+			dailyQuantity = 0
+		} else {
+			return 0, 0, err
+		}
+	}
+
+	return totalSold, dailyQuantity, nil
 }
