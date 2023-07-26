@@ -6,6 +6,7 @@ import (
 	"foodDelivery/migrations"
 	"foodDelivery/repository"
 	"foodDelivery/usecase"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"log"
@@ -78,7 +79,7 @@ func main() {
 
 	// suppliers API
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.GetSupplierByID).Methods("GET")
-	router.HandleFunc("/api/suppliers", supplierHandler.GetAllSuppliers).Methods("")
+	router.HandleFunc("/api/suppliers", supplierHandler.GetAllSuppliers).Methods("GET")
 	router.HandleFunc("/api/suppliers", supplierHandler.CreateSupplier).Methods("POST")
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.UpdateSupplier).Methods("PUT")
 	router.HandleFunc("/api/suppliers/{id}", supplierHandler.DeleteSupplier).Methods("DELETE")
@@ -108,9 +109,15 @@ func main() {
 	router.HandleFunc("/api/addresses/{id}", addressHandler.UpdateAddress).Methods("PUT")
 	router.HandleFunc("/api/addresses", addressHandler.CreateAddress).Methods("POST")
 
+	// fix cross error
+	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
+	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"})
+	allowedHeaders := handlers.AllowedHeaders([]string{"Content-Type", "Authorization"})
+
 	// Start the HTTP server.
 	log.Println("Server started on port 8080")
-	err = http.ListenAndServe(":8080", router)
+	err = http.ListenAndServe(":8080", handlers.CORS(allowedOrigins, allowedMethods, allowedHeaders)(router))
+
 	if err != nil {
 		log.Fatalf("Failed to start the server: %v", err)
 	}
